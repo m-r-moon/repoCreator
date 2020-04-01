@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ "$#" -ne "1" ]; then
+	echo "Usage: createRepo REPO"$'\n'
+else
+	cd /Users/git/Development || exit
+
+	bareRepo=$1".git"
+	repo=$1
+
+	echo "Creating the bare repo..."
+
+	git --bare init $bareRepo
+
+	echo "Adding necessary hook(s)..."
+
+	cd $bareRepo/hooks
+	echo "#!/bin/sh"$'\n'$'\n'"echo "\""Pulling changes into the live directory..."\"""$'\n'$'\n'"cd /Library/WebServer/Documents/"$repo" || exit"$'\n'"unset GIT_DIR"$'\n'"git pull"$'\n'$'\n'"exec git-update-server-info"$'\n'"echo "\""Done"\""$'\n'" > post-update
+	chmod 755 post-update
+
+	echo "Cloning the new repo..."
+
+	cd /Library/WebServer/Documents
+
+	git clone /Users/git/Development/$bareRepo
+
+	echo "Adding .gitignore file..."
+
+	cp /Users/git/Development/.gitignore /Library/WebServer/Documents/$repo
+	git add .gitignore
+	git commit -m "adding .gitignore to repository"
+	
+	echo "Adding package.json file..."
+	
+	echo "{"$'\n'"  "\""name"\"": "\"""$repo""\"","$'\n'"  "\""description"\"": "\"""$repo""\"","$'\n'"  "\""author"\"": "\""Mitchel R Moon"\"","$'\n'"  "\""dependencies"\"":"$'\n'"  {"$'\n'"    "\""express"\"": "\""latest"\"","$'\n'"    "\""mongodb"\"": "\""latest"\"""$'\n'"  }"$'\n'"}"$'\n'"" > /Library/WebServer/Documents/$repo/package.json
+	git add package.json
+	git commit -m "adding package.json to repository"
+
+	git push
+
+	echo "Done."$'\n'
+fi
