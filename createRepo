@@ -11,7 +11,7 @@
 
 
 # getting current username
-currentUser = "$(whoami)"
+currentUser="$(whoami)"
 
 
 # check parameter of the bash shell
