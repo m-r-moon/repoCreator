@@ -1,9 +1,24 @@
-#!/bin/bash
+#!/usr/bin/bash
 
+# WARNING: THIS SCRIPT IS ONLY WORKS FOR CENTOS, RHEL, AND ROCKY LINUX DISTRO
+
+
+# Date: 3/1/2022
+# Developer: Mitchel R Moon, Quan N Nguyen
+# Description: This is create repo tool using bash shell and git hook,
+# which can create a git repo for the project, and update the code inside this repo
+# and code those to apache home directory => deploying directly after pushing!!!
+
+
+# getting current username
+currentUser = "$(whoami)"
+
+
+# check parameter of the bash shell
 if [ "$#" -ne "1" ]; then
 	echo "Usage: createRepo REPO"$'\n'
 else
-	cd /Users/git/Development || exit
+	cd /home/$currentUser/Development || exit
 
 	bareRepo=$1".git"
 	repo=$1
@@ -15,28 +30,14 @@ else
 	echo "Adding necessary hook(s)..."
 
 	cd $bareRepo/hooks
-	echo "#!/bin/sh"$'\n'$'\n'"echo "\""Pulling changes into the live directory..."\"""$'\n'$'\n'"cd /Library/WebServer/Documents/"$repo" || exit"$'\n'"unset GIT_DIR"$'\n'"git pull"$'\n'$'\n'"exec git-update-server-info"$'\n'"echo "\""Done"\""$'\n'" > post-update
+	echo "#!/usr/bin/sh"$'\n'$'\n'"echo "\""Pulling changes into the live directory..."\"""$'\n'$'\n'"cd /var/www/html/"$repo" || exit"$'\n'"unset GIT_DIR"$'\n'"git pull"$'\n'$'\n'"exec git-update-server-info"$'\n'"echo "\""Done"\""$'\n'" > post-update
 	chmod 755 post-update
 
 	echo "Cloning the new repo..."
 
-	cd /Library/WebServer/Documents
+	cd /var/www/html
 
-	git clone /Users/git/Development/$bareRepo
+	git clone /home/qnguyen/Development/$bareRepo
 
-	echo "Adding .gitignore file..."
-
-	cp /Users/git/Development/.gitignore /Library/WebServer/Documents/$repo
-	git add .gitignore
-	git commit -m "adding .gitignore to repository"
-	
-	echo "Adding package.json file..."
-	
-	echo "{"$'\n'"  "\""name"\"": "\"""$repo""\"","$'\n'"  "\""description"\"": "\"""$repo""\"","$'\n'"  "\""author"\"": "\""Mitchel R Moon"\"","$'\n'"  "\""dependencies"\"":"$'\n'"  {"$'\n'"    "\""express"\"": "\""latest"\"","$'\n'"    "\""mongodb"\"": "\""latest"\"""$'\n'"  }"$'\n'"}"$'\n'"" > /Library/WebServer/Documents/$repo/package.json
-	git add package.json
-	git commit -m "adding package.json to repository"
-
-	git push
-
-	echo "Done."$'\n'
+	echo "Finished!!!."$'\n'
 fi
