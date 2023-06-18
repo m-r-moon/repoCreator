@@ -18,7 +18,7 @@ currentUser="$(whoami)"
 if [ "$#" -ne "1" ]; then
 	echo "Usage: createRepo REPO"$'\n'
 else
-	cd /home/$currentUser/Development || exit
+	cd /usr/home/$currentUser/Development || exit
 
 	bareRepo=$1".git"
 	repo=$1
@@ -30,14 +30,14 @@ else
 	echo "Adding necessary hook(s)..."
 
 	cd $bareRepo/hooks
-	echo "#!/usr/bin/sh"$'\n'$'\n'"echo "\""Pulling changes into the live directory..."\"""$'\n'$'\n'"cd /var/www/html/"$repo" || exit"$'\n'"unset GIT_DIR"$'\n'"git pull"$'\n'$'\n'"exec git-update-server-info"$'\n'"echo "\""Done"\""$'\n'" > post-update
+	echo "#!/bin/sh"$'\n'$'\n'"echo "\""Pulling changes into the live directory..."\"""$'\n'$'\n'"cd /usr/local/www/apache24/data/"$repo" || exit"$'\n'"unset GIT_DIR"$'\n'"git pull"$'\n'$'\n'"exec git-update-server-info"$'\n'"echo "\""Done"\""$'\n'" > post-update
 	chmod 755 post-update
 
 	echo "Cloning the new repo..."
 
-	cd /var/www/html
+	cd /usr/local/www/apache24/data
 
-	git clone /home/qnguyen/Development/$bareRepo
+	git clone /usr/home/$currentUser/Development/$bareRepo
 
 	echo "Finished!!!."$'\n'
 fi
