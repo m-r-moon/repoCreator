@@ -37,7 +37,7 @@ else
 
 	cd /var/www/html
 
-	git clone /home/qnguyen/Development/$bareRepo
+	git clone /home/$currentUser/Development/$bareRepo
 
 	echo "Finished!!!."$'\n'
 fi
